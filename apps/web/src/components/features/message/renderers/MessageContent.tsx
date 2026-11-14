@@ -15,6 +15,7 @@ import { messageBubbleClass } from "./MessageRow"
 import { cn } from "@lib/utils"
 import { MessageLinkPreview } from "./LinkPreview"
 import { PollMessageContent } from "./PollMessageContent"
+import { BotButtons } from "./BotButtons"
 import SearchTextRenderer from "./SearchTextRenderer"
 import { MessageReactionsRow } from "./MessageReactions"
 import { DocumentLinkRenderer } from "./DocumentLinkRenderer"
@@ -223,6 +224,8 @@ export const MessageContent = ({ message, showLinkPreview = true, showLinkedDocu
                 // latter is the backend's derived plain-text (search/teasers).
                 <EditableMessageBody message={message} bubble={!!bubble} />
             )}
+
+            <BotButtons message={message} />
 
             {/* Preview for the first link in the body (YouTube embed for now) */}
             {showLinkPreview && <MessageLinkPreview message={message} />}

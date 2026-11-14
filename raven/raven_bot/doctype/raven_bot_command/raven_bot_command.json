@@ -1,0 +1,121 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:command",
+ "creation": "2026-11-14 15:27:36.717251",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "command",
+  "enabled",
+  "bot",
+  "column_break_main",
+  "description",
+  "usage_hint",
+  "section_break_handler",
+  "handler",
+  "channels"
+ ],
+ "fields": [
+  {
+   "description": "Typed after the slash, e.g. devbox for /devbox. Lowercase letters, digits and underscores.",
+   "fieldname": "command",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Command",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "bot",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Reply As",
+   "options": "Raven Bot",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_main",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "description": "Arguments shown in the menu, e.g. start [box]. Angle brackets are stripped on save.",
+   "fieldname": "usage_hint",
+   "fieldtype": "Data",
+   "label": "Usage Hint"
+  },
+  {
+   "fieldname": "section_break_handler",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "Dotted path to a function listed in an app's raven_slash_command_handlers hook. It receives the interaction and returns the reply.",
+   "fieldname": "handler",
+   "fieldtype": "Data",
+   "label": "Handler",
+   "reqd": 1
+  },
+  {
+   "description": "Leave empty to allow the command in every channel.",
+   "fieldname": "channels",
+   "fieldtype": "Table MultiSelect",
+   "label": "Channels",
+   "options": "Raven Bot Command Channel"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-11-14 15:27:36.717251",
+ "modified_by": "Administrator",
+ "module": "Raven Bot",
+ "name": "Raven Bot Command",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Raven Admin",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

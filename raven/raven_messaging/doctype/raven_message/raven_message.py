@@ -18,6 +18,7 @@ from raven.notification import (
 	send_notification_to_user,
 	truncate_notification_content,
 )
+from raven.raven_bot.slash_commands import queue_slash_command
 from raven.utils import (
 	get_channel_members,
 	get_raven_room,
@@ -75,7 +76,7 @@ class RavenMessage(Document):
 
 	def before_validate(self):
 
-		if not self.is_new() and not self.flags.is_ai_streaming:
+		if not self.is_new() and not self.flags.is_ai_streaming and not self.flags.is_bot_step:
 			# this is not a new message, so it's a previous message being edited
 			old_doc = self.get_doc_before_save()
 			if old_doc.text != self.text:
@@ -346,6 +347,7 @@ class RavenMessage(Document):
 
 		if self.message_type == "Text":
 			self.handle_ai_message()
+			queue_slash_command(self)
 
 		self.send_push_notification()
 
@@ -931,6 +933,7 @@ class RavenMessage(Document):
 						"modified": self.modified,
 						"linked_message": self.linked_message,
 						"replied_message_details": self.replied_message_details,
+						"json": self.json,
 						"link_doctype": self.link_doctype,
 						"link_document": self.link_document,
 						"message_reactions": self.message_reactions,

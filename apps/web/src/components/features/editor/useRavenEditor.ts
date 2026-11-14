@@ -15,6 +15,7 @@ import { ChannelMention } from "./channelMention"
 import { CustomEmoji } from "./customEmoji"
 import { Spoiler } from "./spoiler"
 import { EmojiSuggestion } from "./emoji"
+import { SlashCommandSuggestion, type SlashCommandItem } from "./slashCommand"
 import { isSuggestionPopupOpen } from "./suggestion"
 import { convertFenceLineToCodeBlock } from "./codeBlockFence"
 
@@ -63,6 +64,7 @@ interface UseRavenEditorOptions {
     autofocus?: boolean
     /** Empty-state hint shown in the editor (omit to show nothing, e.g. inline edit). */
     placeholder?: string
+    slashCommandsRef?: MutableRefObject<SlashCommandItem[]>
 }
 
 /** Shared editor surface styling — the `.tiptap` class is the render/compose source of truth. */
@@ -77,7 +79,7 @@ export const EDITOR_MIN_H = "min-h-14 md:min-h-16"
 
 const EDITOR_CLASS = `tiptap ${EDITOR_MIN_H} max-h-[40vh] overflow-y-auto px-3 py-2.5 focus:outline-none`
 
-export const useRavenEditor = ({ mode = "chat", onUpdate, submitRef, linkRef, filesRef, cancelReplyRef, editLastRef, content, autofocus = false, placeholder }: UseRavenEditorOptions): Editor | null => {
+export const useRavenEditor = ({ mode = "chat", onUpdate, submitRef, linkRef, filesRef, cancelReplyRef, editLastRef, content, autofocus = false, placeholder, slashCommandsRef }: UseRavenEditorOptions): Editor | null => {
     // Emoji `:` autocomplete is desktop-only — mobile keyboards have their own emoji,
     // and a popup on every ":" is noise. Captured at mount (a breakpoint flip
     // mid-session won't reconfigure the live editor, which is fine).
@@ -126,6 +128,9 @@ export const useRavenEditor = ({ mode = "chat", onUpdate, submitRef, linkRef, fi
     ]
     // Mentions are a chat thing: a form-edited document has nobody to notify.
     if (mode === "chat") extensions.push(UserMention, ChannelMention)
+    if (mode === "chat" && slashCommandsRef) {
+        extensions.push(SlashCommandSuggestion.configure({ getCommands: () => slashCommandsRef.current }))
+    }
     if (placeholder) extensions.push(Placeholder.configure({ placeholder }))
     if (filesRef) {
         // Paste files into the editor → hand them to the caller's upload path (same as
