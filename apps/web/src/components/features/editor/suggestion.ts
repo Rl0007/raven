@@ -7,6 +7,7 @@ import { PluginKey } from "@tiptap/pm/state"
 export const userMentionPluginKey = new PluginKey("userMentionSuggestion")
 export const channelMentionPluginKey = new PluginKey("channelMentionSuggestion")
 export const emojiPluginKey = new PluginKey("emojiSuggestion")
+export const slashCommandPluginKey = new PluginKey("slashCommandSuggestion")
 
 /**
  * How many suggestion popups are currently showing items. The editor's Enter handler

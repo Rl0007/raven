@@ -15,6 +15,7 @@ import { uploadedFilesAtom, uploadingFilesAtom, pendingSendAtom, preparingFilesA
 import { registerComposerFocus } from "./composerFocus"
 import { consumeSharedFiles } from "./sharedFiles"
 import { useRavenEditor, EDITOR_MIN_H } from "@components/features/editor/useRavenEditor"
+import { useSlashCommands } from "@components/features/editor/useSlashCommands"
 import { useQuietSendMode } from "@hooks/useQuietHours"
 import { linkifyBeforeSend } from "@components/features/editor/linkifyOnSend"
 import { EditorFormattingToolbar } from "@components/features/editor/EditorFormattingToolbar"
@@ -145,7 +146,8 @@ const ChatInput = forwardRef<HTMLFormElement, ChatInputProps>(({ channelID, isDi
         useMemo(() => selectAtom(uploadingFilesAtom(channelID), (f) => f.some((file) => file.status === "error")), [channelID]),
     )
 
-    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, cancelReplyRef, editLastRef, content: initialDraft || undefined, autofocus: true, placeholder: _("Type a message...") })
+    const slashCommandsRef = useSlashCommands(channelID)
+    const editor = useRavenEditor({ submitRef: sendRef, linkRef, filesRef, cancelReplyRef, editLastRef, slashCommandsRef, content: initialDraft || undefined, autofocus: true, placeholder: _("Type a message...") })
 
     // On mobile the composer bottom padding is keyboard-aware: closed → clear the home
     // indicator (safe-area inset, with an Android floor); open → just the row's own py-2,
