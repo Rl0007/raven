@@ -21,7 +21,7 @@ def get_channel_commands(channel_id: str) -> list:
 	commands = frappe.get_all(
 		"Raven Bot Command",
 		filters={"enabled": 1},
-		fields=["name", "description", "usage_hint", "bot", "handler"],
+		fields=["name", "description", "usage_hint", "bot", "handler", "server_script"],
 		order_by="name asc",
 	)
 	if not commands:
@@ -89,16 +89,50 @@ class SlashCommandInteraction:
 
 
 def call_handler(command, interaction) -> dict | None:
-	if command.handler not in frappe.get_hooks("raven_slash_command_handlers"):
+	if not is_handler_available(command):
 		return {"text": _("/{0} is not available right now.").format(command.name)}
 	try:
-		reply = frappe.get_attr(command.handler)(interaction)
+		reply = get_handler_reply(command, interaction)
 	except frappe.ValidationError as error:
 		return {"text": str(error)}
 	except Exception:
 		frappe.log_error(title=_("Slash command /{0} failed").format(command.name))
 		return {"text": _("Something went wrong while running /{0}.").format(command.name)}
 	return {"text": reply} if isinstance(reply, str) else reply
+
+
+def is_handler_available(command) -> bool:
+	if command.server_script:
+		return frappe.db.get_value("Server Script", command.server_script, "disabled") == 0
+	return command.handler in frappe.get_hooks("raven_slash_command_handlers")
+
+
+def get_handler_reply(command, interaction) -> dict | str | None:
+	if command.server_script:
+		return get_server_script_reply(command.server_script, interaction)
+	return frappe.get_attr(command.handler)(interaction)
+
+
+def get_server_script_reply(server_script: str, interaction) -> dict | str | None:
+	request_form_dict = frappe.local.form_dict
+	frappe.local.form_dict = get_server_script_arguments(interaction)
+	try:
+		frappe.get_doc("Server Script", server_script).execute_method()
+	finally:
+		frappe.local.form_dict = request_form_dict
+	return frappe.local.response.pop("message", None)
+
+
+def get_server_script_arguments(interaction) -> dict:
+	# The sender is left out on purpose: the script is also reachable as an API,
+	# where form_dict can be forged, so it must rely on frappe.session.user.
+	return frappe._dict(
+		arguments=interaction.arguments,
+		pressed=interaction.pressed,
+		state=interaction.state,
+		channel_id=interaction.message.channel_id,
+		message_id=interaction.message.name,
+	)
 
 
 def send_bot_reply(command, origin_message, reply: dict):
