@@ -16,6 +16,7 @@
   "usage_hint",
   "section_break_handler",
   "handler",
+  "server_script",
   "channels"
  ],
  "fields": [
@@ -64,11 +65,20 @@
    "fieldtype": "Section Break"
   },
   {
-   "description": "Dotted path to a function listed in an app's raven_slash_command_handlers hook. It receives the interaction and returns the reply.",
+   "description": "Dotted path to a function listed in an app's raven_slash_command_handlers hook. It receives the interaction and returns the reply. Leave empty when a Server Script is set.",
    "fieldname": "handler",
    "fieldtype": "Data",
    "label": "Handler",
-   "reqd": 1
+   "mandatory_depends_on": "eval:!doc.server_script"
+  },
+  {
+   "description": "An API Server Script that reads arguments, pressed and state from frappe.form_dict and sets the reply in frappe.response[\"message\"]. Adds a command without app code.",
+   "fieldname": "server_script",
+   "fieldtype": "Link",
+   "label": "Server Script",
+   "link_filters": "[[\"Server Script\",\"script_type\",\"=\",\"API\"]]",
+   "mandatory_depends_on": "eval:!doc.handler",
+   "options": "Server Script"
   },
   {
    "description": "Leave empty to allow the command in every channel.",
@@ -81,7 +91,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-11-14 15:27:36.717251",
+ "modified": "2026-11-16 22:10:00.000000",
  "modified_by": "Administrator",
  "module": "Raven Bot",
  "name": "Raven Bot Command",
